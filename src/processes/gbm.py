@@ -2,7 +2,9 @@
 import numpy as np
 from src.utils.logger import setup_logger
 
-logger = setup_logger()
+import logging
+
+logger = logging.getLogger(__name__)
 # We use NumPy for: random numbers, arrays,  math functions
 
 # Function definition
@@ -58,7 +60,12 @@ def simulate_gbm(S0, mu, sigma, T, dt, seed=None):
     # Without seed: every run → different result, With seed: same input → same output
     # This is CRITICAL for: testing, debugging, scientific reproducibility
     # Number of steps
-    steps = int(T / dt)
+    try:
+        steps = int(T / dt)
+    except Exception as e:
+        logger.error(f"Error computing steps: {e}")
+        raise
+    logger.debug(f"Generated {steps} steps")
     # Example: T = 1 year dt = 1/365  → steps = 365  Converts continuous time → discrete simulation 
     # Memory allocation
     prices = np.empty(steps + 1)
@@ -70,12 +77,17 @@ def simulate_gbm(S0, mu, sigma, T, dt, seed=None):
     # Physics meaning: This is your discrete version of: dWt ∼ N(0,dt)
     # Vectorized random shocks
     shocks = np.random.normal(0, 1, size=steps) * np.sqrt(dt)
+    logger.debug(f"First shock: {shocks[0]}")
 
     # Simulation loop
-    for t in range(1, steps + 1):
-        prices[t] = prices[t - 1] * np.exp(
-            (mu - 0.5 * sigma**2) * dt + sigma * shocks[t - 1]
-        )
+    try:
+        for t in range(1, steps + 1):
+            prices[t] = prices[t - 1] * np.exp(
+                (mu - 0.5 * sigma**2) * dt + sigma * shocks[t - 1]
+            )
+    except Exception as e:
+        logger.exception("Simulation failed")
+        raise
 
     
     logger.info("Simulation completed")
