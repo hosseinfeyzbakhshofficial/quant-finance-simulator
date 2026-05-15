@@ -39,7 +39,7 @@ def simulate_gbm(S0, mu, sigma, T, dt, seed=None):
         Simulated GBM path
     """
 
-    logger.info("Starting GBM simulation")
+    logger.debug("Starting GBM simulation")
 
     #Input validation
     if S0 <= 0:
@@ -90,7 +90,7 @@ def simulate_gbm(S0, mu, sigma, T, dt, seed=None):
         raise
 
     
-    logger.info("Simulation completed")
+    logger.debug("Simulation completed")
     # Return
     return prices 
 # engine that generates the step-by-step evolution of the system over time
