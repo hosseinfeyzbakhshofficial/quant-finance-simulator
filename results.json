@@ -1,0 +1,15 @@
+{
+    "gbm_statistics": {
+        "mean": 91.94957181437147,
+        "variance": 51.51098990407424,
+        "min": 82.05074312769639,
+        "max": 110.25351636967306
+    },
+    "mc_statistics": {
+        "mean_final_price": 110.94803159719336,
+        "std_final_price": 23.489634624298386,
+        "min_final_price": 52.31030904132524,
+        "max_final_price": 257.44111168130024
+    },
+    "option_price": 14.457600798398689
+}

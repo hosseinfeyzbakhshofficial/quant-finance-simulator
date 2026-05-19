@@ -1,6 +1,8 @@
 import argparse
 import logging
 
+import config
+
 from src.utils.logger import setup_logger
 
 from src.processes.gbm import simulate_gbm
@@ -27,6 +29,9 @@ from src.finance.option_pricing import (
     monte_carlo_option_price,
 )
 
+from src.utils.exporter import export_results
+
+
 def main():
 
     # argument parser
@@ -48,14 +53,23 @@ def main():
     logger.info("Running simulation...")
 
     # Single GBM Simulation
-    result = simulate_gbm(
-        S0=100,
-        mu=0.1,
-        sigma=0.2,
-        T=1,
-        dt=0.01,
-        seed=42
+    mc_paths = monte_carlo_gbm(
+        S0=config.S0,
+        mu=config.MU,
+        sigma=config.SIGMA,
+        T=config.T,
+        dt=config.DT,
+        n_simulations=config.N_SIMULATIONS,
     )
+
+    result = simulate_gbm(
+    config.S0,
+    config.MU,
+    config.SIGMA,
+    T=config.T,
+    dt=config.DT,
+    seed=config.SEED
+)
 
     # statistics
     stats = estimate_statistics(result)
@@ -72,12 +86,12 @@ def main():
 
     # Monte Carlo simulation
     mc_paths = monte_carlo_gbm(
-        S0=100,
-        mu=0.1,
-        sigma=0.2,
-        T=1,
-        dt=0.01,
-        n_simulations=1000,
+        S0=config.S0,
+        mu=config.MU,
+        sigma=config.SIGMA,
+        T=config.T,
+        dt=config.DT,
+        n_simulations=config.N_SIMULATIONS,
     )
 
     print("\n===== Monte Carlo Simulation =====")
@@ -98,11 +112,11 @@ def main():
     # European Call Option Pricing
 
     option_price = monte_carlo_option_price(
-        paths=mc_paths,
-        strike=100,
-        r=0.05,
-        T=1,
-    )
+    paths=mc_paths,
+    strike=config.STRIKE,
+    r=config.RISK_FREE_RATE,
+    T=config.T,
+)
 
     print("\n===== European Call Option Price =====")
 
@@ -118,7 +132,7 @@ def main():
     # option payoff
     plot_option_payoff(
     mc_paths[:, -1],
-    strike=100
+    strike=config.STRIKE
 )
     # confidence band
     plot_confidence_band(mc_paths)
@@ -129,11 +143,18 @@ def main():
     # option payoff
     plot_option_payoff(
         mc_paths[:, -1],
-        strike=100
+        strike=config.STRIKE
     )
     
     # confidence band
     plot_confidence_band(mc_paths)
+
+    # JSON Export
+    export_results({
+    "gbm_statistics": stats,
+    "mc_statistics": mc_stats,
+    "option_price": float(option_price),
+})
 
 if __name__ == "__main__":
     main()
