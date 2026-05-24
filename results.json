@@ -6,10 +6,12 @@
         "max": 110.25351636967306
     },
     "mc_statistics": {
-        "mean_final_price": 110.94803159719336,
-        "std_final_price": 23.489634624298386,
-        "min_final_price": 52.31030904132524,
-        "max_final_price": 257.44111168130024
+        "mean_final_price": 105.53703224568528,
+        "std_final_price": 22.344031625403396,
+        "min_final_price": 49.759105164834295,
+        "max_final_price": 244.8855605074273
     },
-    "option_price": 14.457600798398689
+    "option_price_mc": 10.884567142995799,
+    "option_price_black_scholes": 10.450583572185565,
+    "pricing_error": 0.4339835708102342
 }

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-
+import os
 
 def plot_gbm(results):
     """
@@ -22,6 +22,10 @@ def plot_gbm(results):
 
     plt.grid(True)
 
+    os.makedirs("plots", exist_ok=True)
+    
+    plt.savefig("plots/gbm_path.png", dpi=300)
+    
     plt.show()
 
 
@@ -46,6 +50,10 @@ def plot_gbm_dataframe(df):
 
     plt.grid(True)
 
+    os.makedirs("plots", exist_ok=True)
+    
+    plt.savefig("plots/gbm_dataframe.png", dpi=300)
+    
     plt.show()
 
 
@@ -70,6 +78,10 @@ def plot_mc_paths(paths, n_paths=20):
 
     plt.grid(True)
 
+    os.makedirs("plots", exist_ok=True)
+    
+    plt.savefig("plots/monte_carlo_paths.png", dpi=300)
+
     plt.show()
 
 def plot_final_price_distribution(paths):
@@ -93,6 +105,10 @@ def plot_final_price_distribution(paths):
 
     plt.grid(True)
 
+    os.makedirs("plots", exist_ok=True)
+    
+    plt.savefig("plots/gbm_final_distribution.png", dpi=300)
+    
     plt.show()
 
 def plot_option_payoff(final_prices, strike):
@@ -117,6 +133,10 @@ def plot_option_payoff(final_prices, strike):
 
     plt.grid(True)
 
+    os.makedirs("plots", exist_ok=True)
+    
+    plt.savefig("plots/option_payoff.png", dpi=300)
+    
     plt.show()
 
 def plot_confidence_band(paths):
@@ -156,4 +176,8 @@ def plot_confidence_band(paths):
 
     plt.grid(True)
 
+    os.makedirs("plots", exist_ok=True)
+    
+    plt.savefig("plots/confidence_band.png", dpi=300)
+    
     plt.show()

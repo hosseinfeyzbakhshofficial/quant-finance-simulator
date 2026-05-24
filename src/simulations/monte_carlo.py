@@ -1,5 +1,4 @@
 import numpy as np
-from src.processes.gbm import simulate_gbm
 
 
 def monte_carlo_gbm(
@@ -9,44 +8,51 @@ def monte_carlo_gbm(
     T,
     dt,
     n_simulations,
+    seed=None,
 ):
     """
-    Run multiple GBM simulations.
-
-    Parameters
-    ----------
-    S0 : float
-        Initial value
-    mu : float
-        Drift
-    sigma : float
-        Volatility
-    T : float
-        Total time
-    dt : float
-        Time step
-    n_simulations : int
-        Number of Monte Carlo paths
+    Vectorized Monte Carlo GBM simulation.
 
     Returns
     -------
     np.ndarray
-        Matrix of simulated paths
-        shape = (n_simulations, steps + 1)
+        Matrix of shape:
+        (n_simulations, n_steps + 1)
     """
 
-    all_paths = []
+    if seed is not None:
+        np.random.seed(seed)
 
-    for i in range(n_simulations):
+    # number of time steps
+    steps = int(T / dt)
 
-        path = simulate_gbm(
-            S0,
-            mu,
-            sigma,
-            T,
-            dt,
-        )
+    # random shocks matrix
+    shocks = np.random.normal(
+        0,
+        1,
+        size=(n_simulations, steps)
+    ) * np.sqrt(dt)
 
-        all_paths.append(path)
+    # drift term
+    drift = (mu - 0.5 * sigma**2) * dt
 
-    return np.array(all_paths)
+    # diffusion term
+    diffusion = sigma * shocks
+
+    # cumulative log returns
+    log_returns = drift + diffusion
+
+    cumulative_returns = np.cumsum(
+        log_returns,
+        axis=1
+    )
+
+    # GBM formula
+    paths = S0 * np.exp(cumulative_returns)
+
+    # add initial price column
+    paths = np.column_stack(
+        [np.full(n_simulations, S0), paths]
+    )
+
+    return paths
