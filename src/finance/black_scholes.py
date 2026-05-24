@@ -2,7 +2,13 @@ import numpy as np
 from scipy.stats import norm
 
 
-def black_scholes_call(S0, K, T, r, sigma):
+def black_scholes_call(
+    S0: float,
+    K: float,
+    T: float,
+    r: float,
+    sigma: float,
+) -> float:
     """
     Black-Scholes analytical formula for European call option.
     """

@@ -1,17 +1,17 @@
 {
     "gbm_statistics": {
-        "mean": 79.74445391913436,
-        "variance": 247.29356194381464,
-        "min": 62.06014243374979,
-        "max": 119.86841873916163
+        "mean": 91.94957181437147,
+        "variance": 51.51098990407424,
+        "min": 82.05074312769639,
+        "max": 110.25351636967306
     },
     "mc_statistics": {
-        "mean_final_price": 105.02253028322802,
-        "std_final_price": 45.23112096723371,
-        "min_final_price": 22.628648686758098,
-        "max_final_price": 548.0748235277798
+        "mean_final_price": 105.07991457994565,
+        "std_final_price": 21.200193856765036,
+        "min_final_price": 45.80628656572075,
+        "max_final_price": 244.8855605074273
     },
-    "option_price_mc": 18.311856936365388,
-    "option_price_black_scholes": 18.02295145021668,
-    "pricing_error": 0.2889054861487068
+    "option_price_mc": 10.395677456246089,
+    "option_price_black_scholes": 10.450583572185565,
+    "pricing_error": 0.0549061159394757
 }

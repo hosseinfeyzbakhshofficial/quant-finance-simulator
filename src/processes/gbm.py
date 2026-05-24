@@ -14,7 +14,14 @@ logger = logging.getLogger(__name__)
 # This code """  Simulate a Geometric Brownian Motion (GBM) path.  ...  """
 # This is documentation inside the code 
 # Why it matters: Users understand how to use the function, Professor gives points for this, Tools can auto-generate docs from this
-def simulate_gbm(S0, mu, sigma, T, dt, seed=None):
+def simulate_gbm(
+    S0: float,
+    mu: float,
+    sigma: float,
+    T: float,
+    dt: float,
+    seed: int | None = None,
+) -> np.ndarray:
     """
     Simulate a Geometric Brownian Motion (GBM) path.
 

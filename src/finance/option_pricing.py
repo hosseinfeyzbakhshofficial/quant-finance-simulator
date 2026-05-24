@@ -23,11 +23,11 @@ def european_call_payoff(final_prices, strike):
 
 
 def monte_carlo_option_price(
-    paths,
-    strike,
-    r,
-    T,
-):
+    paths: np.ndarray,
+    strike: float,
+    r: float,
+    T: float,
+) -> float:
     """
     Price a European call option using Monte Carlo.
 

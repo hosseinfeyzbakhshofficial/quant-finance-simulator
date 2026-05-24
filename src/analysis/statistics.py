@@ -2,7 +2,9 @@ import numpy as np
 import pandas as pd
 
 
-def estimate_statistics(results):
+def estimate_statistics(
+    results: np.ndarray
+) -> dict:
     """
     Compute basic statistics of GBM simulation output.
     """
@@ -15,7 +17,9 @@ def estimate_statistics(results):
     }
 
 
-def create_dataframe(results):
+def create_dataframe(
+    results: np.ndarray
+) -> pd.DataFrame:
     """
     Convert simulation output into pandas DataFrame.
     """
@@ -28,7 +32,9 @@ def create_dataframe(results):
     return df
 
 
-def estimate_mc_statistics(paths):
+def estimate_mc_statistics(
+    paths: np.ndarray
+) -> dict:
     """
     Compute statistics on Monte Carlo final prices.
     """

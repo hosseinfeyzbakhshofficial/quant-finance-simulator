@@ -57,7 +57,10 @@ def plot_gbm_dataframe(df):
     plt.show()
 
 
-def plot_mc_paths(paths, n_paths=20):
+def plot_mc_paths(
+    paths: np.ndarray,
+    n_paths: int = 20,
+) -> None:
     """
     Plot multiple Monte Carlo GBM paths.
     """

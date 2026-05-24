@@ -1,15 +1,14 @@
 import numpy as np
 
-
 def monte_carlo_gbm(
-    S0,
-    mu,
-    sigma,
-    T,
-    dt,
-    n_simulations,
-    seed=None,
-):
+    S0: float,
+    mu: float,
+    sigma: float,
+    T: float,
+    dt: float,
+    n_simulations: int,
+    seed: int | None = None,
+) -> np.ndarray:
     """
     Vectorized Monte Carlo GBM simulation.
 
@@ -54,5 +53,6 @@ def monte_carlo_gbm(
     paths = np.column_stack(
         [np.full(n_simulations, S0), paths]
     )
+
 
     return paths

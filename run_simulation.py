@@ -2,7 +2,6 @@ import argparse
 import logging
 
 from src.utils.config_loader import load_config
-
 from src.utils.logger import setup_logger
 
 from src.processes.gbm import simulate_gbm
@@ -20,8 +19,6 @@ from src.analysis.visualization import (
     plot_option_payoff,
     plot_confidence_band,
 )
-
-from src.analysis.performance import benchmark_simulation
 
 from src.simulations.monte_carlo import monte_carlo_gbm
 
@@ -43,11 +40,9 @@ from src.utils.exporter import export_results
 def main():
 
     # Load YAML config
-    
     config = load_config()
 
     # Argument parser
-
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -63,77 +58,86 @@ def main():
     parser.add_argument("--T", type=float, default=config["T"])
     parser.add_argument("--dt", type=float, default=config["DT"])
 
-    parser.add_argument("--paths", type=int, default=config["N_SIMULATIONS"])
+    parser.add_argument(
+        "--paths",
+        type=int,
+        default=config["N_SIMULATIONS"]
+    )
 
-    parser.add_argument("--strike", type=float, default=config["STRIKE"])
+    parser.add_argument(
+        "--strike",
+        type=float,
+        default=config["STRIKE"]
+    )
 
-    parser.add_argument("--rate", type=float, default=config["RISK_FREE_RATE"])
-    
+    parser.add_argument(
+        "--rate",
+        type=float,
+        default=config["RISK_FREE_RATE"]
+    )
 
     args = parser.parse_args()
 
+    # CLI Parameters
     S0 = args.s0
     MU = args.mu
     SIGMA = args.sigma
-    
+
     T = args.T
     DT = args.dt
-    
+
     N_SIMULATIONS = args.paths
-    
+
     STRIKE = args.strike
 
     RISK_FREE_RATE = args.rate
 
-    
-
     # Logging
-
     level = logging.DEBUG if args.debug else logging.INFO
 
     logger = setup_logger(level)
 
     logger.info("Running simulation...")
+    logger.info(
+        f"S0={S0}, mu={MU}, sigma={SIGMA}, T={T}, dt={DT}"
+    )
+
+    
+    # Single GBM Simulation
     
 
-    # Single GBM Simulation
-
     result = simulate_gbm(
-    config["S0"]
-    config["MU"]
-    config["SIGMA"]
-    config["T"]
-    config["DT"]
-    seed=config["SEED"]
-)
+        S0=S0,
+        mu=MU,
+        sigma=SIGMA,
+        T=T,
+        dt=DT,
+        seed=config["SEED"],
+    )
 
     # GBM Statistics
-
     stats = estimate_statistics(result)
 
     print("\n===== GBM Statistics =====")
     print(stats)
 
     # DataFrame + Plot
-
     df = create_dataframe(result)
 
     plot_gbm_dataframe(df)
 
-    # Benchmark
-
-    # benchmark_simulation()
-
+    
     # Monte Carlo Simulation
+    
 
     mc_paths = monte_carlo_gbm(
-    S0=S0,
-    mu=RISK_FREE_RATE,
-    sigma=SIGMA,
-    T=T,
-    dt=DT,
-    n_simulations=N_SIMULATIONS,
-)
+        S0=S0,
+        mu=RISK_FREE_RATE,   # risk-neutral pricing
+        sigma=SIGMA,
+        T=T,
+        dt=DT,
+        n_simulations=N_SIMULATIONS,
+    )
 
     print("\n===== Monte Carlo Simulation =====")
 
@@ -144,77 +148,89 @@ def main():
     print("Number of time steps:", mc_paths.shape[1])
 
     # Monte Carlo Statistics
-
     mc_stats = estimate_mc_statistics(mc_paths)
 
     print("\n===== Monte Carlo Statistics =====")
 
     print(mc_stats)
 
+    
     # Monte Carlo Option Pricing
+    
 
     option_price = monte_carlo_option_price(
         paths=mc_paths,
-        strike=config.STRIKE,
+        strike=STRIKE,
         r=RISK_FREE_RATE,
-        T=config.T,
+        T=T,
     )
 
     print("\n===== European Call Option Price =====")
 
     print(f"{option_price:.4f}")
 
-    # Black-Scholes Analytical Price
+    
+    # Black-Scholes Price
+    
 
     bs_price = black_scholes_call(
-        S0=config.S0,
-        K=config.STRIKE,
-        T=config.T,
+        S0=S0,
+        K=STRIKE,
+        T=T,
         r=RISK_FREE_RATE,
-        sigma=config.SIGMA,
+        sigma=SIGMA,
     )
 
     print("\n===== Black-Scholes Price =====")
 
     print(f"{bs_price:.4f}")
 
-    # Greeks
-    delta = call_delta(
-    S0,
-    STRIKE,
-    T,
-    RISK_FREE_RATE,
-    SIGMA,
-)
-    gamma = call_gamma(
-    S0,
-    STRIKE,
-    T,
-    RISK_FREE_RATE,
-    SIGMA,
-)
-    vega = call_vega(
-    S0,
-    STRIKE,
-    T,
-    RISK_FREE_RATE,
-    SIGMA,
-)
-    theta = call_theta(
-    S0,
-    STRIKE,
-    T,
-    RISK_FREE_RATE,
-    SIGMA,
-)
-    print("\n===== Greeks =====")
     
+    # Greeks
+    
+
+    delta = call_delta(
+        S0,
+        STRIKE,
+        T,
+        RISK_FREE_RATE,
+        SIGMA,
+    )
+
+    gamma = call_gamma(
+        S0,
+        STRIKE,
+        T,
+        RISK_FREE_RATE,
+        SIGMA,
+    )
+
+    vega = call_vega(
+        S0,
+        STRIKE,
+        T,
+        RISK_FREE_RATE,
+        SIGMA,
+    )
+
+    theta = call_theta(
+        S0,
+        STRIKE,
+        T,
+        RISK_FREE_RATE,
+        SIGMA,
+    )
+
+    print("\n===== Greeks =====")
+
     print(f"Delta: {delta:.6f}")
     print(f"Gamma: {gamma:.6f}")
     print(f"Vega : {vega:.6f}")
     print(f"Theta: {theta:.6f}")
 
+    
     # Pricing Error
+    
 
     error = abs(option_price - bs_price)
 
@@ -222,7 +238,9 @@ def main():
 
     print(f"{error:.6f}")
 
+    
     # Visualization
+    
 
     plot_mc_paths(mc_paths, n_paths=20)
 
@@ -235,7 +253,9 @@ def main():
 
     plot_confidence_band(mc_paths)
 
+   
     # Export Results
+    
 
     export_results({
         "gbm_statistics": stats,
