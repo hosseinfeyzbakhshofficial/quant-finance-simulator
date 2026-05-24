@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-import config
+from src.utils.config_loader import load_config
 
 from src.utils.logger import setup_logger
 
@@ -42,6 +42,10 @@ from src.utils.exporter import export_results
 
 def main():
 
+    # Load YAML config
+    
+    config = load_config()
+
     # Argument parser
 
     parser = argparse.ArgumentParser()
@@ -52,18 +56,18 @@ def main():
         help="Enable debug logging"
     )
 
-    parser.add_argument("--s0", type=float, default=config.S0)
-    parser.add_argument("--mu", type=float, default=config.MU)
-    parser.add_argument("--sigma", type=float, default=config.SIGMA)
+    parser.add_argument("--s0", type=float, default=config["S0"])
+    parser.add_argument("--mu", type=float, default=config["MU"])
+    parser.add_argument("--sigma", type=float, default=config["SIGMA"])
 
-    parser.add_argument("--T", type=float, default=config.T)
-    parser.add_argument("--dt", type=float, default=config.DT)
+    parser.add_argument("--T", type=float, default=config["T"])
+    parser.add_argument("--dt", type=float, default=config["DT"])
 
-    parser.add_argument("--paths", type=int, default=config.N_SIMULATIONS)
+    parser.add_argument("--paths", type=int, default=config["N_SIMULATIONS"])
 
-    parser.add_argument("--strike", type=float, default=config.STRIKE)
+    parser.add_argument("--strike", type=float, default=config["STRIKE"])
 
-    parser.add_argument("--rate", type=float, default=config.RISK_FREE_RATE)
+    parser.add_argument("--rate", type=float, default=config["RISK_FREE_RATE"])
     
 
     args = parser.parse_args()
@@ -78,7 +82,7 @@ def main():
     N_SIMULATIONS = args.paths
     
     STRIKE = args.strike
-    
+
     RISK_FREE_RATE = args.rate
 
     
@@ -90,16 +94,17 @@ def main():
     logger = setup_logger(level)
 
     logger.info("Running simulation...")
+    
 
     # Single GBM Simulation
 
     result = simulate_gbm(
-    S0,
-    MU,
-    SIGMA,
-    T=T,
-    dt=DT,
-    seed=config.SEED
+    config["S0"]
+    config["MU"]
+    config["SIGMA"]
+    config["T"]
+    config["DT"]
+    seed=config["SEED"]
 )
 
     # GBM Statistics
