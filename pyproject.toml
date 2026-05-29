@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "black-sigma-terminal"
+version = "0.1.0"
+description = "Institutional quantitative finance simulator with Monte Carlo and Black-Scholes analytics"
+authors = [
+    {name = "Hossein Feyzbakhsh"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "streamlit",
+    "numpy",
+    "pandas",
+    "plotly",
+    "scipy",
+    "python-dotenv"
+]
+
+[tool.setuptools]
+packages = ["src"]
