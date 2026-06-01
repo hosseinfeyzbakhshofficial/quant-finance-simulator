@@ -1,5 +1,13 @@
 # Black Sigma Terminal
 
+![Python](https://img.shields.io/badge/Python-3.11+-blue)
+![MIT License](https://img.shields.io/badge/License-MIT-green)
+![Pytest](https://img.shields.io/badge/Tested%20with-Pytest-success)
+![Black](https://img.shields.io/badge/Code%20Style-Black-black)
+![Ruff](https://img.shields.io/badge/Linter-Ruff-orange)
+![Docker](https://img.shields.io/badge/Docker-Ready-blue)
+![Streamlit](https://img.shields.io/badge/Deployed%20on-Streamlit-red)
+
 ### Institutional Quantitative Finance Platform
 
 Black Sigma Terminal is a quantitative finance platform built in Python for option pricing, Monte Carlo simulation, risk analysis, and financial visualization.
