@@ -1,5 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
+
 from src.processes.gbm import simulate_gbm
 
 # generate multiple paths

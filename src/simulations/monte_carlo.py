@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def monte_carlo_gbm(
     S0: float,
     mu: float,
@@ -26,11 +27,7 @@ def monte_carlo_gbm(
     steps = int(T / dt)
 
     # random shocks matrix
-    shocks = np.random.normal(
-        0,
-        1,
-        size=(n_simulations, steps)
-    ) * np.sqrt(dt)
+    shocks = np.random.normal(0, 1, size=(n_simulations, steps)) * np.sqrt(dt)
 
     # drift term
     drift = (mu - 0.5 * sigma**2) * dt
@@ -41,18 +38,12 @@ def monte_carlo_gbm(
     # cumulative log returns
     log_returns = drift + diffusion
 
-    cumulative_returns = np.cumsum(
-        log_returns,
-        axis=1
-    )
+    cumulative_returns = np.cumsum(log_returns, axis=1)
 
     # GBM formula
     paths = S0 * np.exp(cumulative_returns)
 
     # add initial price column
-    paths = np.column_stack(
-        [np.full(n_simulations, S0), paths]
-    )
-
+    paths = np.column_stack([np.full(n_simulations, S0), paths])
 
     return paths

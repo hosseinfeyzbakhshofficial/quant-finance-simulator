@@ -1,18 +1,17 @@
+import os
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
-import os
+
 
 def plot_gbm(results):
     """
     Plot GBM path using seaborn
     """
 
-    df = pd.DataFrame({
-        "time": range(len(results)),
-        "price": results
-    })
+    df = pd.DataFrame({"time": range(len(results)), "price": results})
 
     sns.lineplot(data=df, x="time", y="price")
 
@@ -23,9 +22,9 @@ def plot_gbm(results):
     plt.grid(True)
 
     os.makedirs("plots", exist_ok=True)
-    
+
     plt.savefig("plots/gbm_path.png", dpi=300)
-    
+
     plt.show()
 
 
@@ -36,11 +35,7 @@ def plot_gbm_dataframe(df):
 
     plt.figure(figsize=(8, 5))
 
-    sns.lineplot(
-        data=df,
-        x="time_step",
-        y="price"
-    )
+    sns.lineplot(data=df, x="time_step", y="price")
 
     plt.title("GBM Simulation")
 
@@ -51,9 +46,9 @@ def plot_gbm_dataframe(df):
     plt.grid(True)
 
     os.makedirs("plots", exist_ok=True)
-    
+
     plt.savefig("plots/gbm_dataframe.png", dpi=300)
-    
+
     plt.show()
 
 
@@ -68,11 +63,7 @@ def plot_mc_paths(
     plt.figure(figsize=(12, 6))
 
     for i in range(min(n_paths, len(paths))):
-        plt.plot(
-            paths[i],
-            alpha=0.5,
-            linewidth=1
-        )
+        plt.plot(paths[i], alpha=0.5, linewidth=1)
 
     plt.title("Monte Carlo GBM Paths")
 
@@ -82,10 +73,11 @@ def plot_mc_paths(
     plt.grid(True)
 
     os.makedirs("plots", exist_ok=True)
-    
+
     plt.savefig("plots/monte_carlo_paths.png", dpi=300)
 
     plt.show()
+
 
 def plot_final_price_distribution(paths):
     """
@@ -96,11 +88,7 @@ def plot_final_price_distribution(paths):
 
     plt.figure(figsize=(10, 6))
 
-    sns.histplot(
-        final_prices,
-        bins=30,
-        kde=True
-    )
+    sns.histplot(final_prices, bins=30, kde=True)
 
     plt.title("Distribution of Final Prices")
     plt.xlabel("Final Price")
@@ -109,10 +97,11 @@ def plot_final_price_distribution(paths):
     plt.grid(True)
 
     os.makedirs("plots", exist_ok=True)
-    
+
     plt.savefig("plots/gbm_final_distribution.png", dpi=300)
-    
+
     plt.show()
+
 
 def plot_option_payoff(final_prices, strike):
     """
@@ -123,11 +112,7 @@ def plot_option_payoff(final_prices, strike):
 
     plt.figure(figsize=(10, 6))
 
-    plt.scatter(
-        final_prices,
-        payoff,
-        alpha=0.5
-    )
+    plt.scatter(final_prices, payoff, alpha=0.5)
 
     plt.title("European Call Option Payoff")
 
@@ -137,10 +122,11 @@ def plot_option_payoff(final_prices, strike):
     plt.grid(True)
 
     os.makedirs("plots", exist_ok=True)
-    
+
     plt.savefig("plots/option_payoff.png", dpi=300)
-    
+
     plt.show()
+
 
 def plot_confidence_band(paths):
     """
@@ -157,18 +143,9 @@ def plot_confidence_band(paths):
 
     plt.figure(figsize=(12, 6))
 
-    plt.plot(
-        mean_path,
-        label="Mean Path"
-    )
+    plt.plot(mean_path, label="Mean Path")
 
-    plt.fill_between(
-        range(len(mean_path)),
-        lower,
-        upper,
-        alpha=0.3,
-        label="±1 Std Dev"
-    )
+    plt.fill_between(range(len(mean_path)), lower, upper, alpha=0.3, label="±1 Std Dev")
 
     plt.title("Monte Carlo Mean Path with Confidence Band")
 
@@ -180,7 +157,7 @@ def plot_confidence_band(paths):
     plt.grid(True)
 
     os.makedirs("plots", exist_ok=True)
-    
+
     plt.savefig("plots/confidence_band.png", dpi=300)
-    
+
     plt.show()

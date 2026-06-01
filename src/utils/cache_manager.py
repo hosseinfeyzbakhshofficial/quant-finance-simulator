@@ -1,9 +1,8 @@
-import pickle
 import os
+import pickle
 
 
 def save_simulation(data, filename="cache/mc_cache.pkl"):
-
     os.makedirs("cache", exist_ok=True)
 
     with open(filename, "wb") as f:
@@ -11,7 +10,6 @@ def save_simulation(data, filename="cache/mc_cache.pkl"):
 
 
 def load_simulation(filename="cache/mc_cache.pkl"):
-
     if not os.path.exists(filename):
         return None
 

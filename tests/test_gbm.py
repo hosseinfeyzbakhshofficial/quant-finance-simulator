@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import pytest
 
@@ -40,20 +42,21 @@ def test_gbm_invalid_input():
     with pytest.raises(ValueError):
         simulate_gbm(100, 0.1, 0.2, T=1, dt=-0.01)
 
+
 def test_gbm_shape():
     result = simulate_gbm(100, 0.1, 0.2, T=1, dt=0.01)
     assert result.shape == (101,)
+
 
 def test_gbm_no_explosion():
     result = simulate_gbm(100, 0.1, 0.2, T=5, dt=0.01)
     assert np.all(np.isfinite(result))
 
+
 def test_gbm_variance_positive():
-    sims = [
-        simulate_gbm(100, 0.1, 0.2, 1, 0.01, seed=i)[-1]
-        for i in range(20)
-    ]
+    sims = [simulate_gbm(100, 0.1, 0.2, 1, 0.01, seed=i)[-1] for i in range(20)]
     assert np.var(sims) > 0
+
 
 def test_gbm_mean_growth():
     S0 = 100
@@ -66,11 +69,11 @@ def test_gbm_mean_growth():
 
     assert np.isclose(result[-1], expected, rtol=0.01)
 
+
 def test_gbm_convergence():
     paths = [simulate_gbm(100, 0.1, 0.2, 1, 0.01, seed=i)[-1] for i in range(100)]
     assert np.mean(paths) > 100
 
-import time
 
 def test_gbm_speed():
     start = time.time()

@@ -53,10 +53,7 @@ def monte_carlo_option_price(
 
     final_prices = paths[:, -1]
 
-    payoffs = european_call_payoff(
-        final_prices,
-        strike
-    )
+    payoffs = european_call_payoff(final_prices, strike)
 
     discounted_price = np.exp(-r * T) * np.mean(payoffs)
 
