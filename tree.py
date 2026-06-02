@@ -1,6 +1,5 @@
 import os
 
-# پوشه‌هایی که می‌خواهی در ساختار نشان داده نشوند
 IGNORE_DIRS = {
     ".git",
     ".venv",
@@ -11,7 +10,7 @@ IGNORE_DIRS = {
     ".idea",
     ".vscode",
 }
-# فایل‌هایی که می‌خواهی نادیده بگیری
+
 IGNORE_FILES = {".DS_Store", "make_tree.py"}
 
 
@@ -21,7 +20,6 @@ def generate_tree(dir_path, prefix=""):
     except PermissionError:
         return
 
-    # فیلتر کردن فایل‌ها و پوشه‌های مزاحم
     entries = [e for e in entries if e not in IGNORE_DIRS and e not in IGNORE_FILES]
 
     for i, entry in enumerate(entries):
