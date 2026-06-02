@@ -85,6 +85,22 @@ Black Sigma Terminal
 ```
 
 ---
+## Quick Start
+
+```bash
+git clone https://github.com/hosseinfeyzbakhshofficial/quant-finance-simulator.git
+cd quant-finance-simulator
+
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# Linux/macOS
+source .venv/bin/activate
+
+pip install -r requirements.txt
+streamlit run app.py
+
+---
 
 ## Project Structure
 
