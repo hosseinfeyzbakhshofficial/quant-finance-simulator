@@ -168,7 +168,7 @@ The library provides reusable building blocks for:
 Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/quant-finance-simulator.git
+git clone https://github.com/hosseinfeyzbakhshofficial/quant-finance-simulator.git
 
 cd quant-finance-simulator
 ```
