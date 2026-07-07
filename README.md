@@ -3,342 +3,123 @@
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![MIT License](https://img.shields.io/badge/License-MIT-green)
 ![Pytest](https://img.shields.io/badge/Tested%20with-Pytest-success)
-![Black](https://img.shields.io/badge/Code%20Style-Black-black)
-![Ruff](https://img.shields.io/badge/Linter-Ruff-orange)
-![Docker](https://img.shields.io/badge/Docker-Ready-blue)
+![Code Style](https://img.shields.io/badge/Code%20Style-Black-black)
+![Linter](https://img.shields.io/badge/Linter-Ruff-orange)
 ![Streamlit](https://img.shields.io/badge/Deployed%20on-Streamlit-red)
 
-### Institutional Quantitative Finance Platform
-
-Black Sigma Terminal is a quantitative finance platform built in Python for option pricing, Monte Carlo simulation, risk analysis, and financial visualization.
-
-The project combines an interactive Streamlit dashboard with the MLBOH quantitative analytics library, providing a modular environment for financial modeling and computational finance research.
+An institutional-grade quantitative finance workstation for stochastic asset path simulation, analytical option valuation, risk analysis, and real-time market data broadcasting.
 
 ---
 
-## Live Demo
+## 🎯 What the Software Does
 
-https://quant-finance-simulator.streamlit.app/
+Black Sigma Terminal is designed to simulate, price, and analyze European-style contingent claims under uncertain market regimes. The platform bridges continuous-time financial mathematics with interactive computational tools:
 
----
+1. **Stochastic Asset Simulation:** Simulates continuous price trajectories of an underlying asset using a **Geometric Brownian Motion (GBM)** stochastic differential equation:
+   $$dS_t = \mu S_t dt + \sigma S_t dW_t$$
 
-## Key Features
+2. **Derivative Valuation Engine:** - Computes empirical option prices for European Call options using an advanced **Monte Carlo Simulation** pipeline over tens of thousands of generated hypotheses.
+   - Provides exact baseline comparisons by evaluating the closed-form analytical solutions derived from the **Black-Scholes-Merton Pricing Model**.
 
-### Quantitative Finance
+3. **Risk Sensitivity Auditing (The Greeks):** Quantifies localized exposure and portfolio risk profiles by calculating first and second-order partial derivatives of the option price formula:
+   - **Delta ($\Delta$):** Absolute price sensitivity.
+   - **Gamma ($\Gamma$):** Acceleration of Delta.
+   - **Vega ($\nu$):** Sensitivity to shifts in underlying asset volatility.
+   - **Theta ($\Theta$):** Deterministic time-decay rate.
 
-- Geometric Brownian Motion (GBM) simulation
-- Monte Carlo asset path generation
-- European option pricing
-- Black-Scholes analytical pricing
-- Greeks calculation
-  - Delta
-  - Gamma
-  - Vega
-  - Theta
-- Risk analytics
-- Volatility analysis
-
-### Visualization
-
-- Monte Carlo path visualization
-- Terminal price distributions
-- Confidence bands
-- Option payoff diagrams
-- Statistical summaries
-
-### Software Engineering
-
-- Streamlit Dashboard
-- GitHub Actions CI
-- Docker Support
-- Pytest Test Suite
-- Ruff Linting
-- Black Formatting
-- Pre-commit Hooks
-- MIT License
+4. **Statistical Risk Infrastructure:** Evaluates distributional risk parameters including Value at Risk (VaR), Expected Shortfall (Conditional VaR), and annualized Sharpe Ratios across dynamic pricing paths.
 
 ---
 
-## Project Architecture
+## ⚙️ How It Is Implemented
 
-```text
-Black Sigma Terminal
-│
-├── Streamlit Frontend
-│
-├── MLBOH Quant Library
-│   ├── Pricing
-│   ├── Risk
-│   ├── Analytics
-│   ├── Calibration
-│   ├── Portfolio
-│   └── Reporting
-│
-├── Simulation Engine
-│   ├── GBM
-│   └── Monte Carlo
-│
-└── Financial Analytics
-    ├── Black-Scholes
-    ├── Option Pricing
-    └── Risk Metrics
-```
+The software is engineered with a strict emphasis on performance, decoupled concerns, and production-grade software architecture:
 
----
-## Quick Start
+### 1. High-Performance NumPy Vectorization
+To eliminate the severe performance limits of native Python `for` loops, the entire simulation matrix is vectorized. 
+- Random Wiener increments ($dW$) are sampled simultaneously into a massive multi-dimensional matrix of size `(n_simulations, steps)`.
+- Asset path generation uses highly optimized C-level matrix operations (`np.cumsum` along the temporal axis), allowing the calculation of hundreds of thousands of pathways in milliseconds without blocking the execution thread.
+- The 3D Volatility Surface rendering grid has been fully vectorized using matrix operations to guarantee instant recalculation upon metric updates.
 
-```bash
-git clone https://github.com/hosseinfeyzbakhshofficial/quant-finance-simulator.git
+### 2. Decoupled Modular Architecture
+The system discards monolithic script layouts in favor of a professional Object-Oriented/Functional layer split:
+- `src/processes/`: Pure mathematical definitions of stochastic differential equations and path generation (`gbm.py`, `monte_carlo.py`).
+- `src/finance/`: Analytical option pricing logic, risk sensitivities, and deterministic financial wrappers (`black_scholes.py`, `option_pricing.py`).
+- `src/analysis/`: Statistical calculations, performance benchmarks, and non-blocking Matplotlib visualization routines.
+- `src/utils/`: Safe YAML I/O configuration management and robust session snapshot serialization.
 
-cd quant-finance-simulator
-
-python -m venv .venv
-
-# Windows
-.venv\Scripts\activate
-
-# Linux/macOS
-source .venv/bin/activate
-
-pip install -r requirements.txt
-
-streamlit run app.py
-```
+### 3. Asynchronous Dashboard Design
+The web frontend is built via Streamlit. To simulate a continuous real-time trading floor experience, the platform hooks into active application session states to run an isolated rendering loop. This updates the underlying live asset price feeds and dynamically recalculates the entire pricing and Greeks matrix every second without causing user interface lags.
 
 ---
 
-## Project Structure
+## 📂 Project Structure
 
 ```text
 quant-finance-simulator
-│
-├── app.py
-├── cli.py
-├── run_simulation.py
-│
-├── src
-│   ├── finance
-│   │   ├── black_scholes.py
-│   │   └── option_pricing.py
-│   │
-│   ├── processes
-│   │   ├── gbm.py
-│   │   └── monte_carlo.py
-│   │
-│   ├── simulations
-│   │   └── monte_carlo.py
-│   │
-│   ├── analysis
+├── .github/workflows/       # Automated CI testing pipeline
+├── cache/                  # Serialized simulation snapshots
+├── plots/                  # Exported institutional chart assets
+├── src/                    # Core Analytical Source Code
+│   ├── analysis/           # Statistical risk, benchmarking & plots
 │   │   ├── performance.py
 │   │   ├── statistics.py
 │   │   └── visualization.py
-│   │
-│   ├── utils
-│   │   ├── cache_manager.py
-│   │   ├── config_loader.py
-│   │   ├── exporter.py
-│   │   └── logger.py
-│   │
-│   └── mlboh
-│       ├── pricing.py
-│       ├── risk.py
-│       ├── analytics.py
-│       ├── calibration.py
-│       ├── portfolio.py
-│       ├── reporting.py
-│       └── constants.py
-│
-├── tests
-│   ├── test_gbm.py
-│   ├── test_black_scholes.py
-│   ├── test_option_pricing.py
-│   └── test_risk.py
-│
-└── .github/workflows
-    └── python.yml
-```
+│   ├── finance/            # Black-Scholes models & option pricing engines
+│   │   ├── black_scholes.py
+│   │   └── option_pricing.py
+│   ├── processes/          # Vectorized GBM SDE simulation routines
+│   │   ├── gbm.py
+│   │   └── monte_carlo.py
+│   └── utils/              # Configuration, caching & logging utilities
+│       ├── cache_manager.py
+│       ├── config_loader.py
+│       ├── exporter.py
+│       └── logger.py
+├── tests/                  # Unified Pytest testing suite
+├── app.py                  # Live Streamlit Interactive Workstation
+├── config.yaml             # Decoupled project parameter infrastructure
+├── requirements.txt        # Production dependency manifest
+└── pyproject.toml          # Tooling configuration specification (Ruff/Black)
 
----
 
-## MLBOH Quant Library
+# Quick Start
 
-The project includes a modular quantitative finance package named **MLBOH**.
-
-Example:
-
-```python
-from src.mlboh import *
-
-from src.mlboh.risk import value_at_risk
-from src.mlboh.pricing import *
-```
-
-The library provides reusable building blocks for:
-
-- Pricing
-- Risk Management
-- Portfolio Analytics
-- Calibration
-- Reporting
-- Financial Statistics
-
----
-
-## Installation
-
-Clone the repository:
-
-```bash
+# Clone the repository
 git clone https://github.com/hosseinfeyzbakhshofficial/quant-finance-simulator.git
-
 cd quant-finance-simulator
-```
 
-Create a virtual environment:
-
-```bash
+# Initialize virtual environment
 python -m venv .venv
-```
 
-Activate environment:
-
-### Windows
-
-```bash
+# Activate environment (Windows)
 .venv\Scripts\activate
-```
 
-### Linux / macOS
-
-```bash
+# Activate environment (Linux / macOS)
 source .venv/bin/activate
-```
 
-Install dependencies:
-
-```bash
+# Install required dependencies
 pip install -r requirements.txt
-```
 
----
+# Launching the Terminal Dashboard
 
-## Running the Streamlit Application
-
-```bash
 streamlit run app.py
-```
 
----
+# Execution of Automated Verification Suite
 
-## Running Tests
+python -m pytest tests/ -v
 
-```bash
-pytest tests/
-```
+# Code Quality Assurance
 
-Current test coverage includes:
+The codebase enforces industry-standard validation hooks before integrations:
 
-- GBM simulation
-- Black-Scholes pricing
-- Option pricing
-- Risk metrics
+Linting & Style Analysis: Regulated via ruff check .
 
----
+Deterministic Formatting: Enforced via black .
 
-## Code Quality
+# License
 
-### Ruff
+This project is open-source software licensed under the MIT License. See the LICENSE file for details.
 
-```bash
-ruff check .
-```
-
-### Black
-
-```bash
-black .
-```
-
-### Pre-commit
-
-```bash
-pre-commit run --all-files
-```
-
----
-
-## Docker
-
-Build image:
-
-```bash
-docker build -t black-sigma .
-```
-
-Run container:
-
-```bash
-docker run -p 8501:8501 black-sigma
-```
-
----
-
-## Continuous Integration
-
-GitHub Actions automatically:
-
-- Installs dependencies
-- Runs tests
-- Verifies code quality
-- Validates project integrity
-
-Workflow file:
-
-```text
-.github/workflows/python.yml
-```
-
----
-
-## License
-
-This project is distributed under the MIT License.
-
-See:
-
-```text
-LICENSE
-```
-
-for details.
-
----
-
-## Author
-
-Hossein Feyzbakhsh
-
-Physics Graduate Student
-
-University of Bologna
-
-Quantitative Finance • Computational Modeling • Scientific Computing
-
----
-
-## Future Development
-
-Planned future improvements:
-
-- Advanced portfolio optimization
-- Additional stochastic processes
-- Volatility surface calibration
-- Expanded risk analytics
-- Documentation website
-- PyPI package distribution
-
----
-
-### Black Sigma Terminal
-
-Institutional Quantitative Finance Platform
+# Author
+Hossein Feyzbakhsh M.Sc. Physics Student (Materials Physics and Nanoscience) University of Bologna 
