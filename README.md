@@ -83,43 +83,89 @@ quant-finance-simulator
 └── pyproject.toml          # Tooling configuration specification (Ruff/Black)
 
 
-# Quick Start
+---
 
-# Clone the repository
+## Quick Start
+
+### Clone the repository
+
+```bash
 git clone https://github.com/hosseinfeyzbakhshofficial/quant-finance-simulator.git
 cd quant-finance-simulator
+```
 
-# Initialize virtual environment
+### Initialize virtual environment
+
+```bash
 python -m venv .venv
+```
 
-# Activate environment (Windows)
+### Activate environment (Windows)
+
+```bash
 .venv\Scripts\activate
+```
 
-# Activate environment (Linux / macOS)
+### Activate environment (Linux / macOS)
+
+```bash
 source .venv/bin/activate
+```
 
-# Install required dependencies
+### Install required dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-# Launching the Terminal Dashboard
+---
 
+## Launching the Terminal Dashboard
+
+```bash
 streamlit run app.py
+```
 
-# Execution of Automated Verification Suite
+---
 
+## Execution of Automated Verification Suite
+
+```bash
 python -m pytest tests/ -v
+```
 
-# Code Quality Assurance
+---
 
-The codebase enforces industry-standard validation hooks before integrations:
+## Code Quality Assurance
 
-Linting & Style Analysis: Regulated via ruff check .
+The codebase enforces industry-standard validation hooks before integrations.
 
-Deterministic Formatting: Enforced via black .
+### Ruff (Linting & Style Analysis)
 
-# License
+```bash
+ruff check .
+```
 
-This project is open-source software licensed under the MIT License. See the LICENSE file for details.
+### Black (Deterministic Formatting)
 
-# Author
-Hossein Feyzbakhsh M.Sc. Physics Student (Materials Physics and Nanoscience) University of Bologna 
+```bash
+black .
+```
+
+---
+
+## License
+
+This project is open-source software licensed under the MIT License.
+
+See the `LICENSE` file for details.
+
+---
+
+## Author
+
+**Hossein Feyzbakhsh**
+
+M.Sc. Physics Student (Materials Physics and Nanoscience)
+
+University of Bologna
