@@ -81,8 +81,7 @@ quant-finance-simulator
 ├── config.yaml             # Decoupled project parameter infrastructure
 ├── requirements.txt        # Production dependency manifest
 └── pyproject.toml          # Tooling configuration specification (Ruff/Black)
-
-
+```
 ---
 
 ## Quick Start
