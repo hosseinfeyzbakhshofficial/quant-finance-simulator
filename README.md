@@ -135,6 +135,47 @@ python -m pytest tests/ -v
 
 ---
 
+
+## 💡 Examples of Usage
+
+While the Streamlit dashboard provides a full interactive graphical interface, the core quantitative engine is decoupled and can be used programmatically in your own Python scripts or Jupyter Notebooks.
+
+### 1. Programmatic API Usage
+You can directly import the vectorized stochastic models and analytical pricing functions into your custom pipelines:
+
+```python
+import numpy as np
+from src.processes.gbm import simulate_gbm
+from src.finance.black_scholes import black_scholes_call
+
+# 1. Simulate Asset Path (Geometric Brownian Motion)
+prices = simulate_gbm(
+    S0=100.0,      # Initial price
+    mu=0.05,       # Drift
+    sigma=0.20,    # Volatility
+    T=1.0,         # Time to maturity (years)
+    dt=0.01,       # Time step
+    seed=42        # For reproducibility
+)
+print(f"Terminal Asset Price: ${prices[-1]:.2f}")
+
+# 2. Calculate Analytical Option Price (Black-Scholes)
+call_price = black_scholes_call(
+    S0=100.0,
+    K=100.0,       # Strike price
+    T=1.0,
+    r=0.05,        # Risk-free rate
+    sigma=0.20
+)
+print(f"Theoretical European Call Price: ${call_price:.4f}")
+```
+### 2. Programmatic API Usage
+The repository includes pre-built procedural examples to demonstrate the engine's capabilities. You can run the visualization example directly from your terminal:
+
+```Bash
+python examples/plot_gbm.py
+```
+---
 ## Code Quality Assurance
 
 The codebase enforces industry-standard validation hooks before integrations.
