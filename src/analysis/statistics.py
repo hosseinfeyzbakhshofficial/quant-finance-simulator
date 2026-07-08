@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy.stats import skew, kurtosis
 
 
 def estimate_statistics(results: np.ndarray) -> dict:
@@ -72,3 +73,39 @@ def portfolio_value(positions: np.ndarray) -> float:
     Calculate total portfolio value by summing all open asset positions.
     """
     return float(np.sum(positions))
+
+
+# ==============================================================================
+# Additional statistical functions required for full test coverage
+# ==============================================================================
+
+def calculate_skewness(returns: np.ndarray) -> float:
+    """
+    Calculate the skewness of a return distribution.
+    """
+    if returns is None or len(returns) == 0:
+        raise ValueError("Returns array cannot be empty.")
+    return float(skew(returns))
+
+
+def calculate_kurtosis(returns: np.ndarray) -> float:
+    """
+    Calculate the kurtosis of a return distribution.
+    """
+    if returns is None or len(returns) == 0:
+        raise ValueError("Returns array cannot be empty.")
+    return float(kurtosis(returns))
+
+
+def financial_summary(returns: np.ndarray) -> dict:
+    """
+    Return a dictionary containing essential statistical metrics.
+    """
+    if returns is None or len(returns) == 0:
+        raise ValueError("Returns array cannot be empty.")
+    return {
+        "mean": float(np.mean(returns)),
+        "std": float(np.std(returns)),
+        "skewness": calculate_skewness(returns),
+        "kurtosis": calculate_kurtosis(returns)
+    }

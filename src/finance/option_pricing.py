@@ -1,38 +1,31 @@
 import numpy as np
 from src.finance.black_scholes import black_scholes_call
 
-
-def european_call_payoff(final_prices: np.ndarray, strike: float) -> np.ndarray:
+def monte_carlo_option_price(paths: np.ndarray, strike: float, r: float, T: float) -> float:
     """
-    Compute payoff of a European call option.
+    Calculate European Call option price using simulated Monte Carlo paths.
     """
-    return np.maximum(final_prices - strike, 0)
-
-
-def monte_carlo_option_price(
-    paths: np.ndarray,
-    strike: float,
-    r: float,
-    T: float,
-) -> float:
-    """
-    Price a European call option using Monte Carlo simulation paths.
-    """
+    if paths is None or paths.size == 0:
+        raise ValueError("Paths array cannot be empty.")
+    
+    # Extract final prices at maturity (last column of the matrix)
     final_prices = paths[:, -1]
-    payoffs = european_call_payoff(final_prices, strike)
-    discounted_price = np.exp(-r * T) * np.mean(payoffs)
+    
+    # Calculate payoff for a standard Call Option
+    payoffs = np.maximum(final_prices - strike, 0)
+    
+    # Discount the average expected payoff using the risk-free rate
+    discounted_price = np.mean(payoffs) * np.exp(-r * T)
     return float(discounted_price)
-
 
 def price_call(S: float, K: float, T: float, r: float, sigma: float) -> float:
     """
-    Wrapper function for Black-Scholes call option pricing.
+    Wrapper for Black-Scholes call option pricing.
     """
-    return black_scholes_call(S0=S, K=K, T=T, r=r, sigma=sigma)
-
+    return black_scholes_call(S, K, T, r, sigma)
 
 def volatility_smile(strike: float, atm_strike: float, a: float, b: float, c: float) -> float:
     """
-    Compute implied volatility using a quadratic volatility smile model.
+    Quadratic polynomial representation of the volatility smile.
     """
-    return a * (strike - atm_strike) ** 2 + b * (strike - atm_strike) + c
+    return a * (strike - atm_strike)**2 + b * (strike - atm_strike) + c
