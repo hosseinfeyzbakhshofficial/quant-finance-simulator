@@ -19,6 +19,7 @@ dependencies = [
     "plotly",
     "scipy",
     "python-dotenv"
+    "yfinance"
 ]
 
 [tool.setuptools]

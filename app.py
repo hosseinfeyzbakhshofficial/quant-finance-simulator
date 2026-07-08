@@ -23,6 +23,65 @@ from src.utils.cache_manager import (
 
 load_dotenv()
 
+import yfinance as yf
+
+def fetch_historical_market_data(ticker: str, period: str = "1y"):
+    """
+    Fetches real market data from Yahoo Finance.
+    Returns the latest Close Price (S0) and Annualized Historical Volatility (Sigma).
+    """
+    try:
+        stock = yf.Ticker(ticker)
+        hist = stock.history(period=period)
+        
+        if hist.empty:
+            return None, None
+        
+        # 1. Current Asset Price (Last available closing price)
+        s0 = float(hist['Close'].iloc[-1])
+        
+        # 2. Calculate Annualized Historical Volatility
+        # Formula: std(log_returns) * sqrt(252 trading days)
+        hist['Log_Return'] = np.log(hist['Close'] / hist['Close'].shift(1))
+        daily_std = hist['Log_Return'].std()
+        sigma = float(daily_std * np.sqrt(252))
+        
+        return s0, sigma
+    except Exception:
+        return None, None
+
+@st.cache_data(ttl=300)
+def get_dynamic_marquee_data():
+    """
+    Fetches real-time prices for major indices, crypto, and key stocks.
+    Cached for 5 minutes (300 seconds) to prevent API rate limits.
+    """
+    symbols = {
+        "^GSPC": "S&P 500",
+        "^IXIC": "NASDAQ",
+        "BTC-USD": "BTC",
+        "ETH-USD": "ETH",
+        "AAPL": "AAPL",
+        "NVDA": "NVDA"
+    }
+    ticker_strings = []
+    for sym, name in symbols.items():
+        try:
+            hist = yf.Ticker(sym).history(period="2d")
+            if len(hist) >= 2:
+                last = hist['Close'].iloc[-1]
+                prev = hist['Close'].iloc[-2]
+                pct = ((last - prev) / prev) * 100
+                icon = "🟢" if pct >= 0 else "🔴"
+                ticker_strings.append(f"{icon} {name} ${last:,.2f} ({pct:+.2f}%)")
+        except Exception:
+            pass
+            
+    if ticker_strings:
+        return " | ".join(ticker_strings) + " | ⚫ BLACK SIGMA TERMINAL ACTIVE"
+    return "🟢 DATA FEED OFFLINE | ⚫ BLACK SIGMA TERMINAL ACTIVE"
+
+
 APP_NAME = os.getenv("APP_NAME", "Black Sigma")
 DEFAULT_RATE = float(os.getenv("DEFAULT_RATE", 0.05))
 
@@ -110,14 +169,46 @@ st.markdown(
 if "current_price" not in st.session_state:
     st.session_state.current_price = 100.0
 
+# =============================================================================
+# 🌐 MARKET DATA SOURCE & SIDEBAR CONTROLS
+# =============================================================================
 # Sidebar Controls
-run_live = st.sidebar.toggle("🟢 Enable Live Market Feed", value=False)
+run_live = st.sidebar.toggle("🟢 Enable Live Market Feed (yfinance)", value=False)
 st.sidebar.divider()
 
+# Default fallback values for manual mode
+S0 = 100.0
+SIGMA = 0.20
+market_hist_data = None  # Stores real dataframe for the candlestick chart
+
+if run_live:
+    ticker = st.sidebar.text_input("Stock Ticker (e.g., AAPL, TSLA, NVDA)", value="AAPL").upper()
+    time_window = st.sidebar.selectbox("Historical Volatility Window", ["6m", "1y", "2y"], index=1)
+    
+    try:
+        stock = yf.Ticker(ticker)
+        hist = stock.history(period=time_window)
+        if not hist.empty:
+            # 1. Extract the latest available closing price
+            S0 = float(hist['Close'].iloc[-1])
+            st.session_state.current_price = S0
+            
+            # 2. Calculate annualized historical volatility based on log returns
+            hist['Log_Return'] = np.log(hist['Close'] / hist['Close'].shift(1))
+            SIGMA = float(hist['Log_Return'].std() * np.sqrt(252))
+            
+            st.sidebar.success(f"📊 {ticker} Loaded Successfully!")
+            st.sidebar.metric("Live Spot Price ($S_0$)", f"${S0:.2f}")
+            st.sidebar.metric(r"Computed Historical Vol ($\sigma$)", f"{SIGMA * 100:.2f}%")
+        else:
+            st.sidebar.error("❌ Ticker not found. Using manual defaults.")
+    except Exception as e:
+        st.sidebar.error(f"❌ Error fetching market data: {e}")
+
 with st.sidebar.expander("⚙️ Market Parameters", expanded=True):
-    # If live mode is on, S0 takes the active session price dynamically
+    # Lock S0 input to live market price if active
     if run_live:
-        S0 = st.number_input("Initial Asset Price (S0)", value=float(st.session_state.current_price), step=1.0, disabled=True)
+        st.number_input("Initial Asset Price (S0)", value=S0, disabled=True)
     else:
         S0 = st.number_input("Initial Asset Price (S0)", value=100.0, step=1.0)
         st.session_state.current_price = S0
@@ -127,7 +218,11 @@ with st.sidebar.expander("⚙️ Market Parameters", expanded=True):
 
 with st.sidebar.expander("📊 Stochastic Process (GBM)", expanded=True):
     MU = st.slider("Drift (μ)", 0.00, 0.30, 0.10)
-    SIGMA = st.slider("Volatility (σ)", 0.01, 1.00, 0.20)
+    # Lock Volatility slider to computed historical sigma if active
+    if run_live:
+        st.slider("Volatility (σ)", 0.01, 1.00, float(np.clip(SIGMA, 0.01, 1.00)), disabled=True)
+    else:
+        SIGMA = st.slider(r"Volatility ($\sigma$)", 0.01, 1.00, 0.20)
     T = st.slider("Time to Maturity (Years)", 0.1, 5.0, 1.0)
 
 with st.sidebar.expander("🧮 Monte Carlo Settings", expanded=False):
@@ -135,18 +230,52 @@ with st.sidebar.expander("🧮 Monte Carlo Settings", expanded=False):
     DT = st.number_input("Time Step (dt)", value=0.01, format="%.3f")
     seed_toggle = st.checkbox("Use Fixed Seed", value=True)
 
-# Generate Live/Static Market Feed Data
-np.random.seed(42)
-candles = []
-price_track = 100.0 if not run_live else st.session_state.current_price - 5.0
-for i in range(50):
-    open_price = price_track
-    change = np.random.normal(0, SIGMA)
-    close_price = open_price + change
-    high_price = max(open_price, close_price) + abs(np.random.normal(0, 0.2))
-    low_price = min(open_price, close_price) - abs(np.random.normal(0, 0.2))
-    candles.append([i, open_price, high_price, low_price, close_price])
-    price_track = close_price
+# =============================================================================
+# 📈 INSTITUTIONAL MARKET FEED (REAL CANDLESTICK CHART)
+# =============================================================================
+if run_live and market_hist_data is not None and not market_hist_data.empty:
+    # Use real historical data for the chart
+    df_candle = market_hist_data.reset_index()
+    # Convert dates to string to prevent Plotly from rendering weekend gaps
+    df_candle['Date_Str'] = df_candle['Date'].dt.strftime('%Y-%m-%d')
+    
+    fig_candle = go.Figure(data=[go.Candlestick(
+        x=df_candle["Date_Str"], open=df_candle["Open"], high=df_candle["High"],
+        low=df_candle["Low"], close=df_candle["Close"],
+        increasing_line_color=GREEN, decreasing_line_color=RED,
+        increasing_fillcolor=GREEN, decreasing_fillcolor=RED
+    )])
+    chart_title = f"## 📈 {ticker} Real Market Feed"
+else:
+    # Generate simulated data for manual mode
+    np.random.seed(42)
+    candles = []
+    price_track = 100.0
+    for i in range(50):
+        open_price = price_track
+        change = np.random.normal(0, SIGMA)
+        close_price = open_price + change
+        high_price = max(open_price, close_price) + abs(np.random.normal(0, 0.2))
+        low_price = min(open_price, close_price) - abs(np.random.normal(0, 0.2))
+        candles.append([i, open_price, high_price, low_price, close_price])
+        price_track = close_price
+
+    df_candle = pd.DataFrame(candles, columns=["time", "open", "high", "low", "close"])
+    fig_candle = go.Figure(data=[go.Candlestick(
+        x=df_candle["time"], open=df_candle["open"], high=df_candle["high"],
+        low=df_candle["low"], close=df_candle["close"],
+        increasing_line_color=GREEN, decreasing_line_color=RED,
+        increasing_fillcolor=GREEN, decreasing_fillcolor=RED
+    )])
+    chart_title = "## 📈 Institutional Market Feed (Simulated)"
+
+fig_candle.update_layout(
+    template="plotly_dark", paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+    height=350, xaxis_title="Timeline", yaxis_title="Price",
+    xaxis_rangeslider_visible=False  # Hide slider for a cleaner terminal look
+)
+st.markdown(chart_title)
+st.plotly_chart(fig_candle, use_container_width=True)
 
 # Update the latest point if live feed is active
 if run_live:
@@ -187,11 +316,15 @@ simulation_state = {
     "parameters": {"S0": S0, "STRIKE": STRIKE, "SIGMA": SIGMA, "T": T, "RISK_FREE_RATE": RISK_FREE_RATE, "N_SIMULATIONS": N_SIMULATIONS}
 }
 
-# Marquee Ticker
-st.markdown("""
+# =============================================================================
+# 📰 LIVE MARQUEE TICKER
+# =============================================================================
+live_ticker_text = get_dynamic_marquee_data()
+
+st.markdown(f"""
 <div style="background:#111827; padding:10px; overflow:hidden; white-space:nowrap; border-bottom:1px solid #1f2937; margin-bottom:15px;">
-<marquee behavior="scroll" direction="left">
-🟢 S&P 500 +0.84% | 🔵 NASDAQ +1.14% | 🟡 VIX 14.22 | 🟢 BTC $108,000 | ⚫ BLACK SIGMA TERMINAL ACTIVE
+<marquee behavior="scroll" direction="left" style="font-weight: bold; letter-spacing: 1px;">
+{live_ticker_text}
 </marquee>
 </div>
 """, unsafe_allow_html=True)
@@ -350,11 +483,3 @@ st.sidebar.metric("Monte Carlo Throughput", f"{N_SIMULATIONS:,}/sec")
 if st.sidebar.button("Save Simulation Snapshot"):
     save_simulation(simulation_state)
     st.sidebar.success("Simulation cached successfully.")
-
-# Live Market Feed Loop Worker (Triggers safely at the end of execution context)
-if run_live:
-    daily_vol = SIGMA / np.sqrt(252)
-    shock = np.random.normal(0, daily_vol) * st.session_state.current_price
-    st.session_state.current_price += shock
-    time.sleep(1)
-    st.rerun()
