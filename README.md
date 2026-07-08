@@ -50,6 +50,20 @@ The system discards monolithic script layouts in favor of a professional Object-
 
 ### 3. Asynchronous Dashboard Design
 The web frontend is built via Streamlit. To simulate a continuous real-time trading floor experience, the platform hooks into active application session states to run an isolated rendering loop. This updates the underlying live asset price feeds and dynamically recalculates the entire pricing and Greeks matrix every second without causing user interface lags.
+---
+
+## 🏗 Design Philosophy
+
+The project follows modern software engineering principles with a strong emphasis on modularity, maintainability, and separation of concerns. The architecture is intentionally divided into independent analytical components, making each module reusable, testable, and easy to extend.
+
+### Separation of Concerns
+
+- **`src/processes/`** — Vectorized stochastic processes and Geometric Brownian Motion simulations.
+- **`src/finance/`** — Black-Scholes analytical pricing and Monte Carlo option valuation.
+- **`src/analysis/`** — Statistical analysis, visualization, and performance evaluation.
+- **`src/utils/`** — Configuration management, caching, exporting, and logging utilities.
+
+This modular design enables comprehensive unit testing while keeping mathematical models independent from visualization and user interface components.
 
 ---
 
