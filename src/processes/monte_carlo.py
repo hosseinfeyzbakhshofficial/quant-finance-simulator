@@ -76,3 +76,30 @@ def get_final_gbm_values(
     """
     paths = monte_carlo_gbm(S0, mu, sigma, T, dt, n_simulations, seed)
     return paths[:, -1]
+
+
+class MonteCarloSimulator:
+    """
+    Object-oriented wrapper for Monte Carlo GBM simulation to satisfy test suite requirements.
+    """
+    def __init__(self, S0: float, mu: float, sigma: float, T: float, steps: int):
+        if S0 < 0 or sigma < 0 or T <= 0 or steps <= 0:
+            raise ValueError("Invalid parameters: S0 and sigma must be >= 0, T and steps must be > 0.")
+        
+        self.S0 = S0
+        self.mu = mu
+        self.sigma = sigma
+        self.T = T
+        self.steps = steps
+        self.dt = T / steps
+
+    def generate_paths(self, num_simulations: int, seed: int = None) -> np.ndarray:
+        return monte_carlo_gbm(
+            S0=self.S0,
+            mu=self.mu,
+            sigma=self.sigma,
+            T=self.T,
+            dt=self.dt,
+            n_simulations=num_simulations,
+            seed=seed
+        )
