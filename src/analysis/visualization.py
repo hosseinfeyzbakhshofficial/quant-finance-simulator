@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+
 def plot_gbm(results):
     """Plot GBM path using seaborn"""
     df = pd.DataFrame({"time": range(len(results)), "price": results})
@@ -17,6 +18,7 @@ def plot_gbm(results):
     plt.savefig("plots/gbm_path.png", dpi=300, bbox_inches="tight")
     plt.close()
 
+
 def plot_gbm_dataframe(df):
     """Plot GBM dataframe"""
     plt.figure(figsize=(10, 5))
@@ -28,6 +30,7 @@ def plot_gbm_dataframe(df):
     os.makedirs("plots", exist_ok=True)
     plt.savefig("plots/gbm_dataframe.png", dpi=300, bbox_inches="tight")
     plt.close()
+
 
 def plot_mc_paths(paths: np.ndarray):
     """Plot multiple Monte Carlo simulation paths"""
@@ -42,6 +45,7 @@ def plot_mc_paths(paths: np.ndarray):
     plt.savefig("plots/monte_carlo_paths.png", dpi=300, bbox_inches="tight")
     plt.close()
 
+
 def plot_gbm_final_distribution(final_prices):
     """Plot distribution of final price states"""
     plt.figure(figsize=(10, 6))
@@ -53,6 +57,7 @@ def plot_gbm_final_distribution(final_prices):
     os.makedirs("plots", exist_ok=True)
     plt.savefig("plots/gbm_final_distribution.png", dpi=300, bbox_inches="tight")
     plt.close()
+
 
 def plot_option_payoff(final_prices, strike):
     """Plot European call option payoff Architecture"""
@@ -66,6 +71,7 @@ def plot_option_payoff(final_prices, strike):
     os.makedirs("plots", exist_ok=True)
     plt.savefig("plots/option_payoff.png", dpi=300, bbox_inches="tight")
     plt.close()
+
 
 def plot_confidence_band(paths):
     """Plot mean path with 95% confidence interval band"""
@@ -85,3 +91,19 @@ def plot_confidence_band(paths):
     os.makedirs("plots", exist_ok=True)
     plt.savefig("plots/confidence_band.png", dpi=300, bbox_inches="tight")
     plt.close()
+
+
+def plot_simulation_paths(paths: np.ndarray) -> plt.Figure:
+    """
+    Interface wrapper to match test suite expectations.
+    """
+    plot_mc_paths(paths)
+    return plt.gcf()
+
+
+def plot_price_histogram(prices: np.ndarray, bins: int = 30) -> plt.Figure:
+    """
+    Interface wrapper to match test suite expectations.
+    """
+    plot_gbm_final_distribution(prices)
+    return plt.gcf()
