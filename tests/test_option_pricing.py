@@ -1,6 +1,10 @@
-import numpy as np
 import pytest
-from src.finance.option_pricing import monte_carlo_option_price
+import numpy as np
+from src.finance.option_pricing import (
+    monte_carlo_option_price,
+    price_call,
+    volatility_smile,
+)
 
 def test_option_price_positive():
     """
@@ -36,3 +40,27 @@ def test_option_pricing_empty_paths():
     paths = np.array([])
     with pytest.raises((ValueError, IndexError)):
         monte_carlo_option_price(paths=paths, strike=100, r=0.05, T=1)
+
+# ==============================================================================
+# NEW SUPPLEMENTARY TESTS ADDED TO COVER MISSING LINES (31, 38)
+# ==============================================================================
+
+def test_price_call_wrapper():
+    """
+    STORY: Verify the wrapper function for Black-Scholes call option pricing.
+    EXPECTED: Successfully invokes the core BS model and returns a valid price (Line 31).
+    """
+    wrapper_price = price_call(S=100, K=100, T=1, r=0.05, sigma=0.2)
+    assert wrapper_price > 0
+    assert isinstance(wrapper_price, float)
+
+def test_volatility_smile_calculation():
+    """
+    STORY: Validate the quadratic polynomial representation of the volatility smile.
+    EXPECTED: Correctly calculates implied volatility based on strike distance from ATM (Line 38).
+    """
+    # Using simple numbers to test the quadratic expression: a*(K - K_atm)^2 + b*(K - K_atm) + c
+    implied_vol = volatility_smile(strike=110, atm_strike=100, a=0.001, b=0.01, c=0.2)
+    expected_vol = 0.001 * (110 - 100)**2 + 0.01 * (110 - 100) + 0.2
+    
+    assert np.isclose(implied_vol, expected_vol)
