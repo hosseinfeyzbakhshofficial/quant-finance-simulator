@@ -4,8 +4,8 @@ from src.finance.black_scholes import (
     black_scholes_call,
     call_delta,
     call_gamma,
-    call_theta,
     call_vega,
+    call_theta,
 )
 
 def test_call_price_positive():
@@ -98,3 +98,49 @@ def test_black_scholes_zero_volatility():
     """
     price = black_scholes_call(S0=110, K=100, T=1, r=0.05, sigma=0.0)
     assert price >= 0 and np.isfinite(price)
+
+# ==============================================================================
+# NEW SUPPLEMENTARY TESTS ADDED TO COVER MISSING LINES (35, 41, 52, 67, 82, 85)
+# ==============================================================================
+
+def test_call_delta_missing_coverage():
+    """
+    STORY: Cover validation errors and boundary conditions within call_delta function.
+    EXPECTED: Negative inputs raise ValueError (Line 35), T<=0 or sigma<=0 returns intrinsic delta (Line 41).
+    """
+    with pytest.raises(ValueError):
+        call_delta(S0=-100, K=100, T=1, r=0.05, sigma=0.2)
+        
+    # S0 > K when T <= 0 or sigma <= 0
+    assert call_delta(S0=110, K=100, T=0, r=0.05, sigma=0.2) == 1.0
+    # S0 <= K when T <= 0 or sigma <= 0
+    assert call_delta(S0=90, K=100, T=1, r=0.05, sigma=0.0) == 0.0
+
+def test_call_gamma_missing_coverage():
+    """
+    STORY: Cover validation errors within call_gamma function.
+    EXPECTED: Negative inputs raise ValueError (Line 52).
+    """
+    with pytest.raises(ValueError):
+        call_gamma(S0=100, K=-100, T=1, r=0.05, sigma=0.2)
+
+def test_call_vega_missing_coverage():
+    """
+    STORY: Cover validation errors within call_vega function.
+    EXPECTED: Negative inputs raise ValueError (Line 67).
+    """
+    with pytest.raises(ValueError):
+        call_vega(S0=100, K=100, T=-1, r=0.05, sigma=0.2)
+
+def test_call_theta_missing_coverage():
+    """
+    STORY: Cover validation errors and boundary conditions within call_theta function.
+    EXPECTED: Negative inputs raise ValueError (Line 82), boundary cases return 0.0 (Line 85).
+    """
+    with pytest.raises(ValueError):
+        call_theta(S0=100, K=100, T=1, r=0.05, sigma=-0.2)
+        
+    # Boundary conditions for call_theta (S0 == 0 or T <= 0 or sigma <= 0)
+    assert call_theta(S0=0, K=100, T=1, r=0.05, sigma=0.2) == 0.0
+    assert call_theta(S0=100, K=100, T=0, r=0.05, sigma=0.2) == 0.0
+    assert call_theta(S0=100, K=100, T=1, r=0.05, sigma=0.0) == 0.0
