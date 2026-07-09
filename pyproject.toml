@@ -1,30 +1,57 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "black-sigma-terminal"
 version = "0.1.0"
-description = "Institutional quantitative finance simulator with Monte Carlo and Black-Scholes analytics"
-authors = [
-    {name = "Hossein Feyzbakhsh"}
-]
+description = "Institutional-grade quantitative finance simulator with Monte Carlo, Black-Scholes analytics, and risk analysis."
 readme = "README.md"
 requires-python = ">=3.10"
+license = { text = "MIT" }
 
-dependencies = [
-    "streamlit",
-    "numpy",
-    "pandas",
-    "plotly",
-    "scipy",
-    "python-dotenv",
-    "yfinance"
+authors = [
+    { name = "Hossein Feyzbakhsh" }
 ]
 
-[tool.setuptools]
-packages = ["src"]
+keywords = [
+    "quantitative-finance",
+    "monte-carlo",
+    "black-scholes",
+    "options",
+    "finance",
+    "streamlit",
+    "simulation",
+]
 
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+]
+
+dependencies = [
+    "streamlit>=1.57",
+    "numpy>=2.2",
+    "pandas>=2.3",
+    "scipy>=1.15",
+    "matplotlib>=3.10",
+    "plotly>=6.0",
+    "PyYAML>=6.0",
+    "python-dotenv>=1.2",
+    "yfinance>=0.2.40",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.black]
+line-length = 88
 
 [tool.ruff]
 line-length = 88
@@ -41,12 +68,11 @@ lint.ignore = [
     "E501",
 ]
 
-[tool.black]
-line-length = 88
-
 [tool.pytest.ini_options]
+testpaths = ["tests"]
+
 filterwarnings = [
     "ignore::RuntimeWarning",
     "ignore:One or more sample arguments is too small",
-    "ignore:Precision loss occurred in moment calculation"
+    "ignore:Precision loss occurred in moment calculation",
 ]
