@@ -183,7 +183,7 @@ market_hist_data = None  # Stores real dataframe for the candlestick chart
 
 if run_live:
     ticker = st.sidebar.text_input("Stock Ticker (e.g., AAPL, TSLA, NVDA)", value="AAPL").upper()
-    time_window = st.sidebar.selectbox("Historical Volatility Window", ["6m", "1y", "2y"], index=1)
+    time_window = st.sidebar.selectbox("Historical Volatility Window", ["6mo", "1y", "2y"], index=1)
     
     try:
         stock = yf.Ticker(ticker)
