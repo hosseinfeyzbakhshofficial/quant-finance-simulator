@@ -1,28 +1,12 @@
-# ==========================================
-# Black Sigma Terminal - Dependencies
-# ==========================================
-
-# --- Core Scientific & Financial Engine ---
+streamlit>=1.57.0
 numpy>=2.4.4
-pandas>=3.0.2,<4.0
-scipy>=1.17.1,<2.0
-
-# --- Dashboard & Web UI ---
-streamlit>=1.57.0,<2.0
-
-# --- Visualization & Plotting ---
-matplotlib>=3.10.8,<4.0
-seaborn>=0.13.2,<0.14
-plotly>=6.7.0,<7.0
-altair>=6.1.0,<7.0
-
-# --- Configuration & Utilities ---
-PyYAML>=6.0.3,<7.0
-python-dotenv>=1.2.2,<2.0
-tqdm>=4.67.3,<5.0
-yfinance>=0.2.40,<1.0
-
-# --- Code Quality & Testing (Dev Tools) ---
-pytest>=8.0.0,<9.0
-black>=24.0.0,<25.0
-ruff>=0.3.0,<0.4.0
+pandas>=3.0.2
+scipy>=1.17.1
+matplotlib>=3.10.8
+seaborn>=0.13.2
+plotly>=6.7.0
+altair>=6.1.0
+PyYAML>=6.0.3
+python-dotenv>=1.2.2
+tqdm>=4.67.3
+yfinance>=0.2.40
