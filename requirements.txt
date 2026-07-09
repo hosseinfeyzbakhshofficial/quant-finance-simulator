@@ -3,7 +3,7 @@
 # ==========================================
 
 # --- Core Scientific & Financial Engine ---
-numpy>=2.4.4,<3.0
+numpy>=2.4.4
 pandas>=3.0.2,<4.0
 scipy>=1.17.1,<2.0
 
