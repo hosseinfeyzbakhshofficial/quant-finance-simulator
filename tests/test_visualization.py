@@ -30,3 +30,16 @@ def test_plot_price_histogram_returns_figure():
     assert fig is not None
     assert isinstance(fig, plt.Figure)
     plt.close(fig)
+
+def test_multiple_visualization_functions():
+    """
+    STORY: Execute remaining visualization routines.
+    """
+
+    paths = np.random.normal(100, 5, (10, 50))
+
+    fig = plot_simulation_paths(paths)
+
+    assert fig is not None
+
+    plt.close(fig)

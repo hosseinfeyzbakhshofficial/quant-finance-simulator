@@ -3,6 +3,7 @@ import numpy as np
 from src.analysis.performance import sharpe_ratio, value_at_risk
 from src.analysis.statistics import calculate_skewness, calculate_kurtosis, financial_summary
 
+
 def test_sharpe_ratio_zero_variance():
     """
     STORY: Handle edge cases where portfolio returns are completely flat (zero volatility).
@@ -31,3 +32,10 @@ def test_financial_summary_dictionary_output():
     assert isinstance(summary, dict)
     assert "mean" in summary
     assert "std" in summary
+
+def test_analysis_additional_edge_cases():
+    """
+    STORY: Exercise additional statistical edge cases.
+    """
+    data = np.array([1, 2, 3, 4, 5])
+    assert value_at_risk(data) is not None
