@@ -15,7 +15,7 @@ from src.finance.black_scholes import (
     call_vega,
 )
 from src.finance.option_pricing import monte_carlo_option_price
-from src.processes.monte_carlo import monte_carlo_gbm
+from src.processes.monte_carlo import MonteCarloSimulator
 from src.utils.cache_manager import (
     load_simulation,
     save_simulation,
@@ -300,7 +300,9 @@ if seed_toggle:
     np.random.seed(42)
     
 with st.spinner("Initializing Quantitative Engine & Simulating Paths..."):
-    mc_paths = monte_carlo_gbm(S0=S0, mu=RISK_FREE_RATE, sigma=SIGMA, T=T, dt=DT, n_simulations=int(N_SIMULATIONS))
+    steps = max(1, int(T / DT))
+    simulator = MonteCarloSimulator(S0=S0, mu=RISK_FREE_RATE, sigma=SIGMA, T=T, steps=steps)
+    mc_paths = simulator.generate_paths(num_simulations=int(N_SIMULATIONS))
     mc_price = monte_carlo_option_price(paths=mc_paths, strike=STRIKE, r=RISK_FREE_RATE, T=T)
     bs_price = black_scholes_call(S0=S0, K=STRIKE, T=T, r=RISK_FREE_RATE, sigma=SIGMA)
     pricing_error = abs(mc_price - bs_price)
