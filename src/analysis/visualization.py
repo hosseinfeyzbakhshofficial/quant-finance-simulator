@@ -81,8 +81,10 @@ def plot_confidence_band(paths):
     
     plt.figure(figsize=(10, 6))
     plt.plot(time_steps, mean_path, color="#00e676", label="Mean Trajectory", linewidth=2)
+    
     plt.fill_between(time_steps, mean_path - 1.96 * std_path, mean_path + 1.96 * std_path, 
-                     color="rgba(0, 230, 118, 0.15)", alpha=0.15, label="95% Confidence Band")
+                     color="#00e676", alpha=0.15, label="95% Confidence Band")
+    
     plt.title("GBM Expectation Pathway with Volatility Bands")
     plt.xlabel("Time Steps")
     plt.ylabel("Price")
